@@ -63,6 +63,14 @@ function setNeighbourSprite(x, y, map) {
 }
 
 //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+function updateAround(x, y, map) {
+	setNeighbourSprite(x + 1, y, map);
+	setNeighbourSprite(x - 1, y, map);
+	setNeighbourSprite(x, y + 1, map);
+	setNeighbourSprite(x, y - 1, map);
+}
+
+//▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 module.exports = {
 	name:     'winston-kun',
 	description: 'Simple autotiler',
@@ -71,23 +79,13 @@ module.exports = {
 	start:    null,
 	end:      null,
 	draw: function (x, y, toolbox, isStart) {
-		var toolbox     = toolbox;
-		var mapEditor   = toolbox.mapEditor;
-		var spritesheet = toolbox.spritesheet;
-		var keyboard    = toolbox.keyboard;
-		var map = mapEditor.map;
-
-		if (keyboard.shift) {
-			map.remove(x, y);
-		} else {
-			// set sprite at position
-			setSpriteAtPosition(x, y, spritesheet.sprite, map);
-		}
-
-		// update around
-		setNeighbourSprite(x + 1, y, map);
-		setNeighbourSprite(x - 1, y, map);
-		setNeighbourSprite(x, y + 1, map);
-		setNeighbourSprite(x, y - 1, map);
+		var map = toolbox.mapEditor.map;
+		setSpriteAtPosition(x, y, toolbox.spritesheet.sprite, map);
+		updateAround(x, y, map);
+	},
+	erase: function (x, y, toolbox, isStart) {
+		var map = toolbox.mapEditor.map;
+		map.remove(x, y);
+		updateAround(x, y, map);
 	}
-}
+};
