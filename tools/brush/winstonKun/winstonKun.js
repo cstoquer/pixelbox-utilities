@@ -18,9 +18,9 @@ var tilePartByNeighbour = [
 ];
 
 //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-function getTile(sprite) {
-	var x = sprite % 16;
-	var y = ~~(sprite / 16);
+function getTile(tile) {
+	var x = tile % 16;
+	var y = ~~(tile / 16);
 	var i = ~~(x / 4);
 	var j = ~~(y / 4);
 	return { x: i, y: j, id: i + j * 4 };
@@ -30,7 +30,7 @@ function getTile(sprite) {
 function getMapTile(map, x, y) {
 	var item = map.get(x, y);
 	if (item === null) return -1;
-	return getTile(item.sprite);
+	return getTile(item.tile);
 }
 
 //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
@@ -45,29 +45,29 @@ function getTileNeighbour(x, y, map, tile) {
 }
 
 //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-function setSpriteAtPosition(x, y, sprite, map) {
-	var tile = getTile(sprite);
+function setSpriteAtPosition(x, y, tile, map) {
+	var tile = getTile(tile);
 	var neighbour = getTileNeighbour(x, y, map, tile);
 	var part = tilePartByNeighbour[neighbour];
 
-	var sprite = tile.x * 4 + part.x + (tile.y * 4 + part.y) * 16;
-	map.set(x, y, sprite, false, false, false);
+	var tile = tile.x * 4 + part.x + (tile.y * 4 + part.y) * 16;
+	map.set(x, y, tile, false, false, false);
 }
 
 //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-function setNeighbourSprite(x, y, map) {
+function setNeighbourTile(x, y, map) {
 	if (x < 0 || x >= map.width || y < 0 || y >= map.height) return;
 	var item = map.get(x, y);
 	if (item === null) return;
-	setSpriteAtPosition(x, y, item.sprite, map);
+	setSpriteAtPosition(x, y, item.tile, map);
 }
 
 //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 function updateAround(x, y, map) {
-	setNeighbourSprite(x + 1, y, map);
-	setNeighbourSprite(x - 1, y, map);
-	setNeighbourSprite(x, y + 1, map);
-	setNeighbourSprite(x, y - 1, map);
+	setNeighbourTile(x + 1, y, map);
+	setNeighbourTile(x - 1, y, map);
+	setNeighbourTile(x, y + 1, map);
+	setNeighbourTile(x, y - 1, map);
 }
 
 //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
@@ -80,7 +80,7 @@ module.exports = {
 	end:      null,
 	draw: function (x, y, toolbox, isStart) {
 		var map = toolbox.mapEditor.map;
-		setSpriteAtPosition(x, y, toolbox.spritesheet.sprite, map);
+		setSpriteAtPosition(x, y, toolbox.tilesheet.tile, map);
 		updateAround(x, y, map);
 	},
 	erase: function (x, y, toolbox, isStart) {

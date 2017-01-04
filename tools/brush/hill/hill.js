@@ -2,25 +2,35 @@
 var map;
 var clipboard;
 var mapInit;
+var tilesheet;
 
 //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 function drawRectangle(map, x0, y0, x1, y1) {
 	// check that rectangle have dimension 
-	if (x0 === x1 || y0 === y1) return;
+	if (x0 === x1 && y0 === y1) return;
 
 	// set start and end coordinate in correct order
 	if (x0 > x1) { var x = x0; x0 = x1; x1 = x; }
 	if (y0 > y1) { var y = y0; y0 = y1; y1 = y; }
 
+	// top-left tile
+	var tile = tilesheet.tile;
+
+	// special case: if hill width is 1
+	if (x1 === x0) {
+		for (var y = y0; y <= y1; y++) {
+			var j = y === y0 ? 0 : 1;
+			map.set(x0, y, 3 + tile + j * 16);
+		}
+		return;
+	}
+
 	// fill rectangle
 	for (var x = x0; x <= x1; x++) {
 	for (var y = y0; y <= y1; y++) {
-		item = clipboard.get(
-			x === x0 ? 0 : x === x1 ? 2 : 1,
-			y === y0 ? 0 : y === y1 ? 2 : 1
-		);
-		if (item === null) continue;
-		map.set(x, y, item.tile, item.flipH, item.flipV, item.flipR, item.flagA, item.flagB);
+		var i = x === x0 ? 0 : x === x1 ? 2 : 1;
+		var j = y === y0 ? 0 : 1;
+		map.set(x, y, tile + i + j * 16);
 	}}
 }
 
@@ -29,11 +39,12 @@ var pw, ph; // previous position
 
 //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 module.exports = {
-	name: '9 grid',
-	description: 'Draw rectangular blocs using 9 grid.\nUse a 3 x 3 map stored in the clipboard as template.',
+	name: 'hills',
+	description: 'Draw rectangular hills using 6 + 2 grid.\nSelect the top left corner of the hill pattern in the tilesheet.',
 	select: function (toolbox, listItem) {
 		map = toolbox.mapEditor.map;
 		clipboard = toolbox.mapClipboard;
+		tilesheet = toolbox.tilesheet;
 	},
 
 	start: function (x, y, toolbox) {

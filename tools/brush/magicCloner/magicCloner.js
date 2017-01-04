@@ -1,24 +1,24 @@
-// clone from spritesheet
+// clone from tilesheet
 
-var sx, sy; // start position relative to spritesheet position 
+var sx, sy; // start position relative to tilesheet position 
 
 var mapEditor;
-var spritesheet;
+var tilesheet;
 var keyboard;
 
 
 module.exports = {
 	name: 'magic cloner',
 	select: function (toolbox, listItem) {
-		mapEditor   = toolbox.mapEditor;
-		spritesheet = toolbox.spritesheet;
-		keyboard    = toolbox.keyboard;
+		mapEditor = toolbox.mapEditor;
+		tilesheet = toolbox.tilesheet;
+		keyboard  = toolbox.keyboard;
 	},
 
 	start: function (x, y, toolbox) {
-		var sprite = spritesheet.sprite;
-		sx =   (sprite % 16) - x;
-		sy = ~~(sprite / 16) - y;
+		var tile = tilesheet.tile;
+		sx =   (tile % 16) - x;
+		sy = ~~(tile / 16) - y;
 	},
 
 	draw: function (x, y, toolbox, isStart) {
@@ -27,8 +27,8 @@ module.exports = {
 			mapEditor.map.remove(x, y);
 		} else {
 			// TODO: handle overflow
-			var sprite = (x + sx) + (y + sy) * 16;
-			mapEditor.map.set(x, y, sprite, spritesheet.flipH, spritesheet.flipV, spritesheet.flipR);
+			var tile = (x + sx) + (y + sy) * 16;
+			mapEditor.map.set(x, y, tile, tilesheet.flipH, tilesheet.flipV, tilesheet.flipR);
 		}
 	}
 }
